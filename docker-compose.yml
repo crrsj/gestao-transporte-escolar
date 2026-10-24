@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # 1. Base de Dados PostgreSQL
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: escolar_db
+      POSTGRES_USER: user_escolar
+      POSTGRES_PASSWORD: password_escolar
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # 2. Backend Spring Boot (pasta escolar)
+  api:
+    build: ./escolar
+    container_name: escolar_api
+    restart: on-failure
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/escolar_db
+      - SPRING_DATASOURCE_USERNAME=user_escolar
+      - SPRING_DATASOURCE_PASSWORD=password_escolar
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  # 3. Frontend SPA (pasta transporte)
+  frontend:
+    build: ./transporte
+    container_name: escolar_frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  pgdata:

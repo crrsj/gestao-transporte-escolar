@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestão em Transporte Escolar</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-zinc-100 font-sans antialiased text-zinc-800">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar (Menu Lateral em Zinc Escuro) -->
+        <aside class="w-64 bg-zinc-900 text-zinc-100 flex flex-col hidden md:flex border-r border-zinc-800">
+            <div class="p-5 text-2xl font-bold tracking-wider flex items-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-amber-500"></i>
+                <span>Gestão em Transporte Escolar</span>
+            </div>
+            <nav class="flex-1 px-4 space-y-2 mt-4">
+                <button onclick="mudarAba('dashboard')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left bg-zinc-800 text-amber-400 transition font-medium">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
+                </button>
+                <button onclick="mudarAba('alunos')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition">
+                    <i class="fa-solid fa-user-graduate w-5"></i> Alunos
+                </button>
+                <button onclick="mudarAba('responsaveis')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition">
+                    <i class="fa-solid fa-users w-5"></i> Responsáveis
+                </button>
+                <button onclick="mudarAba('escolas')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition">
+                    <i class="fa-solid fa-school w-5"></i> Escolas
+                </button>
+                <button onclick="mudarAba('pagamentos')" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 transition">
+                    <i class="fa-solid fa-file-invoice-dollar w-5"></i> Pagamentos
+                </button>
+            </nav>
+            <div class="p-4 text-xs text-zinc-500 text-center border-t border-zinc-800">
+                API Spring Boot Conectada
+            </div>
+        </aside>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            
+            <!-- Topbar (Substituído o branco por zinc-200/zinc-50) -->
+            <header class="bg-zinc-200 shadow-sm h-16 flex items-center justify-between px-8 z-10 border-b border-zinc-300">
+                <h1 id="titulo-pagina" class="text-xl font-semibold text-zinc-900">Dashboard</h1>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-medium text-zinc-700">Admin</span>
+                    <div class="w-10 h-10 rounded-full bg-zinc-300 flex items-center justify-center text-zinc-800 font-bold border border-zinc-400">AD</div>
+                </div>
+            </header>
+
+            <!-- Área Dinâmica das Telas -->
+            <main class="p-8 bg-zinc-100 min-h-[calc(100vh-4rem)]">
+                
+                <!-- ABA DASHBOARD -->
+                <section id="conteudo-dashboard" class="view-section space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="bg-zinc-200 p-6 rounded-xl shadow-sm border border-zinc-300 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-zinc-600">Total Alunos</p>
+                                <h3 id="dash-total-alunos" class="text-2xl font-bold text-zinc-900 mt-1">--</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-user-graduate"></i></div>
+                        </div>
+                        <div class="bg-zinc-200 p-6 rounded-xl shadow-sm border border-zinc-300 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-zinc-600">Responsáveis</p>
+                                <h3  id="dash-total-responsaveis" class="text-2xl font-bold text-zinc-900 mt-1">--</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-users"></i></div>
+                        </div>
+                        <div class="bg-zinc-200 p-6 rounded-xl shadow-sm border border-zinc-300 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-zinc-600">Escolas</p>
+                                <h3 id="dash-total-escolas" class="text-2xl font-bold text-zinc-900 mt-1">--</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 text-purple-700 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-school"></i></div>
+                        </div>
+                        <div class="bg-zinc-200 p-6 rounded-xl shadow-sm border border-zinc-300 flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-zinc-600">Pagamentos Pendentes</p>
+                                <h3 id="dash-valor-pendente" class="text-2xl font-bold text-zinc-900 mt-1">--</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 text-orange-700 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ABA ALUNOS -->
+                <section id="conteudo-alunos" class="view-section hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-zinc-900">Lista de Alunos</h2>
+                        <button onclick="abrirModalAluno()" class="bg-amber-600 text-zinc-900 font-semibold px-4 py-2 rounded-lg hover:bg-amber-500 transition flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Novo Aluno
+                        </button>
+                    </div>
+                    <div class="bg-zinc-200 rounded-xl shadow-sm border border-zinc-300 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-zinc-300 border-b border-zinc-400 text-xs font-semibold text-zinc-700 uppercase tracking-wider">
+                                    <th class="p-4">Nome</th>
+                                    <th class="p-4">Turma</th>
+                                    <th class="p-4">Turno</th>
+                                    <th class="p-4">Tipo Ensino</th>
+                                        <th class="p-4">Ano Letivo</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-alunos-body" class="divide-y divide-zinc-300 text-sm text-zinc-700">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ABA RESPONSÁVEIS -->
+                <section id="conteudo-responsaveis" class="view-section hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-zinc-900">Lista de Responsáveis</h2>
+                        <button class="bg-amber-600 text-zinc-900 font-semibold px-4 py-2 rounded-lg hover:bg-amber-500 transition flex items-center gap-2" onclick="abrirModalResponsavel()">
+                            <i class="fa-solid fa-plus"></i> Novo Responsável
+                        </button>
+                    </div>
+                    <div class="bg-zinc-200 rounded-xl shadow-sm border border-zinc-300 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-zinc-300 border-b border-zinc-400 text-xs font-semibold text-zinc-700 uppercase tracking-wider">
+                                    <th class="p-4">Nome</th>
+                                    <th class="p-4">CPF</th>
+                                    <th class="p-4">Telefone</th>
+                                    <th class="p-4">E-mail</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-responsaveis-body" class="divide-y divide-zinc-300 text-sm text-zinc-700">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ABA ESCOLAS -->
+                <section id="conteudo-escolas" class="view-section hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-zinc-900">Lista de Escolas</h2>
+                        <button class="bg-amber-600 text-zinc-900 font-semibold px-4 py-2 rounded-lg hover:bg-amber-500 transition flex items-center gap-2" onclick="abrirModalEscola()">
+                            <i class="fa-solid fa-plus"></i> Nova Escola
+                        </button>
+                    </div>
+                    <div class="bg-zinc-200 rounded-xl shadow-sm border border-zinc-300 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-zinc-300 border-b border-zinc-400 text-xs font-semibold text-zinc-700 uppercase tracking-wider">
+                                    <th class="p-4">Nome da Escola</th>
+                                    <th class="p-4">Telefone</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-escolas-body" class="divide-y divide-zinc-300 text-sm text-zinc-700">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ABA PAGAMENTOS -->
+                <section id="conteudo-pagamentos" class="view-section hidden space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-zinc-900">Controle de Pagamentos</h2>
+                        <button class="bg-amber-600 text-zinc-900 font-semibold px-4 py-2 rounded-lg hover:bg-amber-500 transition flex items-center gap-2" onclick="abrirModalPagamento()">
+                            <i class="fa-solid fa-plus"></i> Registrar Pagamento
+                        </button>
+                    </div>
+                    <div class="bg-zinc-200 rounded-xl shadow-sm border border-zinc-300 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-zinc-300 border-b border-zinc-400 text-xs font-semibold text-zinc-700 uppercase tracking-wider">
+                                    <th class="p-4">Pagador</th>
+                                    <th class="p-4">Data do Pagamento</th>
+                                    <th class="p-4">Valor</th>
+                                    <th class="p-4">Status</th>
+                                    <th class="p-4">Mês/Ano</th>
+                                    <th class="p-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-pagamentos-body" class="divide-y divide-zinc-300 text-sm text-zinc-700">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO ALUNO -->
+<div id="modal-aluno" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-2xl overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-amber-600"></i> Cadastrar Novo Aluno
+            </h3>
+            <button onclick="fecharModalAluno()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-aluno" onsubmit="salvarAluno(event)" class="p-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome Completo</label>
+                    <input type="text" id="aluno-nome" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Data de Nascimento</label>
+                    <input type="date" id="aluno-dataNasc" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Sexo</label>
+                    <select id="aluno-sexo" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="MASCULINO">Masculino</option>
+                        <option value="FEMININO">Feminino</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Turma</label>
+                    <input type="text" id="aluno-turma" placeholder="Ex: A1" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Turno</label>
+                    <select id="aluno-turno" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="MANHA">Manhã</option>
+                        <option value="TARDE">Tarde</option>
+                        <option value="NOITE">Noite</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Tipo de Ensino</label>
+                    <select id="aluno-tipoEnsino" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="FUNDAMENTAL">Fundamental</option>
+                        <option value="MEDEO">Médio</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Ano Letivo</label>
+                    <select id="aluno-ano" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="PRIMEIRO">1º Ano</option>
+                        <option value="SEGUNDO">2º Ano</option>
+                        <option value="TERCEIRO">3º Ano</option>
+                        <option value="QUARTO">4º Ano</option>
+                        <option value="QUINTO">5º Ano</option>
+                        <option value="SEXTO">6º Ano</option>
+                        <option value="SETIMO">7º Ano</option>
+                        <option value="OITAVO">8º Ano</option>
+                        <option value="NONO">9º Ano</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Escola</label>
+                    <select id="aluno-escola" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Carregando escolas...</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Responsável</label>
+                    <select id="aluno-responsavel" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Carregando responsáveis...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalAluno()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Aluno
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL NOVO RESPONSÁVEL -->
+<div id="modal-responsavel" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-lg overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-user-plus text-amber-600"></i> Cadastrar Novo Responsável
+            </h3>
+            <button onclick="fecharModalResponsavel()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-responsavel" onsubmit="salvarResponsavel(event)" class="p-6 space-y-4">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome do Responsável</label>
+                    <input type="text" id="resp-nome" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: Maria da Silva">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">CPF</label>
+                    <input type="text" id="resp-cpf" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: 000.000.000-00">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Telefone</label>
+                    <input type="text" id="resp-telefone" class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: (00) 00000-0000">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">E-mail</label>
+                    <input type="email" id="resp-email" class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: email@exemplo.com">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalResponsavel()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Responsável
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR RESPONSÁVEL -->
+<div id="modal-editar-responsavel" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-lg overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-amber-600"></i> Editar Responsável
+            </h3>
+            <button onclick="fecharModalEditarResponsavel()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-editar-responsavel" onsubmit="atualizarResponsavel(event)" class="p-6 space-y-4">
+            <input type="hidden" id="edit-resp-id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome do Responsável</label>
+                    <input type="text" id="edit-resp-nome" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">CPF (Apenas leitura)</label>
+                    <input type="text" id="edit-resp-cpf" disabled class="w-full bg-zinc-300 border border-zinc-300 rounded-lg p-2.5 text-sm text-zinc-500 cursor-not-allowed outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Telefone</label>
+                    <input type="text" id="edit-resp-telefone" class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">E-mail</label>
+                    <input type="email" id="edit-resp-email" class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalEditarResponsavel()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL NOVA ESCOLA -->
+<div id="modal-escola" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-lg overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-school text-amber-600"></i> Cadastrar Nova Escola
+            </h3>
+            <button onclick="fecharModalEscola()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-escola" onsubmit="salvarEscola(event)" class="p-6 space-y-4">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome da Escola</label>
+                    <input type="text" id="escola-nome" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: Colégio Dom Pedro II">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Telefone da Escola</label>
+                    <input type="text" id="escola-telefone" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: (79) 3211-0000">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalEscola()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Escola
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR ESCOLA -->
+<div id="modal-editar-escola" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-lg overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-school-circle-check text-amber-600"></i> Editar Escola
+            </h3>
+            <button onclick="fecharModalEditarEscola()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-editar-escola" onsubmit="atualizarEscola(event)" class="p-6 space-y-4">
+            <input type="hidden" id="edit-escola-id">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome da Escola</label>
+                    <input type="text" id="edit-escola-nome" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Telefone da Escola</label>
+                    <input type="text" id="edit-escola-telefone" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalEditarEscola()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- MODAL NOVO PAGAMENTO -->
+<div id="modal-pagamento" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-2xl overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-money-bill-transfer text-amber-600"></i> Registrar Novo Pagamento
+            </h3>
+            <button onclick="fecharModalPagamento()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-pagamento" onsubmit="salvarPagamento(event)" class="p-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Responsável (Pagador)</label>
+                    <select id="pagamento-responsavel" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Carregando responsáveis...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome do Pagador</label>
+                    <input type="text" id="pagamento-pagador" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: Carlos Roberto">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Valor da Mensalidade (R$)</label>
+                    <input type="number" step="0.01" id="pagamento-valor" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: 250.00">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Ano</label>
+                    <input type="number" id="pagamento-ano" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Ex: 2026">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Mês Referente</label>
+                    <select id="pagamento-mes" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Selecione o Mês</option>
+                        <option value="JANEIRO">Janeiro</option>
+                        <option value="FEVEREIRO">Fevereiro</option>
+                        <option value="MARCO">Março</option>
+                        <option value="ABRIL">Abril</option>
+                        <option value="MAIO">Maio</option>
+                        <option value="JUNHO">Junho</option>
+                        <option value="JULHO">Julho</option>
+                        <option value="AGOSTO">Agosto</option>
+                        <option value="SETEMBRO">Setembro</option>
+                        <option value="OUTUBRO">Outubro</option>
+                        <option value="NOVEMBRO">Novembro</option>
+                        <option value="DEZEMBRO">Dezembro</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Status do Pagamento</label>
+                    <select id="pagamento-status" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="PENDENTE">Pendente</option>
+                        <option value="PAGO">Pago</option>
+                        <option value="ATRASADO">Atrasado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalPagamento()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Pagamento
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR PAGAMENTO -->
+<div id="modal-editar-pagamento" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-2xl overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-file-pen text-amber-600"></i> Editar Pagamento
+            </h3>
+            <button onclick="fecharModalEditarPagamento()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-editar-pagamento" onsubmit="atualizarPagamento(event)" class="p-6 space-y-4">
+            <input type="hidden" id="edit-pagamento-id">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Responsável</label>
+                    <select id="edit-pagamento-responsavel" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Carregando responsáveis...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome do Pagador</label>
+                    <input type="text" id="edit-pagamento-pagador" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Valor da Mensalidade (R$)</label>
+                    <input type="number" step="0.01" id="edit-pagamento-valor" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Ano</label>
+                    <input type="number" id="edit-pagamento-ano" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Mês Referente</label>
+                    <select id="edit-pagamento-mes" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Selecione o Mês</option>
+                        <option value="JANEIRO">Janeiro</option>
+                        <option value="FEVEREIRO">Fevereiro</option>
+                        <option value="MARCO">Março</option>
+                        <option value="ABRIL">Abril</option>
+                        <option value="MAIO">Maio</option>
+                        <option value="JUNHO">Junho</option>
+                        <option value="JULHO">Julho</option>
+                        <option value="AGOSTO">Agosto</option>
+                        <option value="SETEMBRO">Setembro</option>
+                        <option value="OUTUBRO">Outubro</option>
+                        <option value="NOVEMBRO">Novembro</option>
+                        <option value="DEZEMBRO">Dezembro</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Data do Pagamento (Somente Leitura)</label>
+                    <!-- Campo configurado como readonly e com estilo visual diferenciado para indicar bloqueio -->
+                    <input type="date" id="edit-pagamento-data" readonly class="w-full bg-zinc-200 border border-zinc-300 rounded-lg p-2.5 text-sm text-zinc-600 cursor-not-allowed outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Status</label>
+                    <select id="edit-pagamento-status" class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="PENDENTE">Pendente</option>
+                        <option value="PAGO">Pago</option>
+                        <option value="ATRASADO">Atrasado</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalEditarPagamento()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR ALUNO -->
+<div id="modal-editar-aluno" class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-zinc-200 rounded-xl border border-zinc-300 shadow-xl w-full max-w-2xl overflow-hidden">
+        <div class="bg-zinc-300 px-6 py-4 border-b border-zinc-400 flex justify-between items-center">
+            <h3 class="font-bold text-lg text-zinc-900 flex items-center gap-2">
+                <i class="fa-solid fa-user-pen text-amber-600"></i> Editar Aluno
+            </h3>
+            <button onclick="fecharModalEditarAluno()" class="text-zinc-600 hover:text-zinc-900 text-xl font-bold">&times;</button>
+        </div>
+        
+        <form id="form-editar-aluno" onsubmit="atualizarAluno(event)" class="p-6 space-y-4">
+            <input type="hidden" id="edit-aluno-id">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Nome do Aluno</label>
+                    <input type="text" id="edit-aluno-nome" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Turma</label>
+                    <input type="text" id="edit-aluno-turma" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Turno</label>
+                    <input type="text" id="edit-aluno-turno" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Tipo de Ensino</label>
+                    <input type="text" id="edit-aluno-tipo-ensino" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Ano</label>
+                    <input type="text" id="edit-aluno-ano" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Escola</label>
+                    <select id="edit-aluno-escola" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+                        <option value="">Carregando escolas...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-zinc-300">
+                <button type="button" onclick="fecharModalEditarAluno()" class="px-4 py-2 bg-zinc-300 hover:bg-zinc-400 text-zinc-800 rounded-lg text-sm font-semibold transition">Cancelar</button>
+                <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-900 rounded-lg text-sm font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Salvar Alterações
+                </button>
+            </div>
+            <!-- Adicione estes campos dentro da grid do modal de editar aluno -->
+           <div>
+             <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Data de Nascimento</label>
+             <input type="date" id="edit-aluno-datanasc" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+          </div>
+         <div>
+          <label class="block text-xs font-semibold text-zinc-700 uppercase mb-1">Sexo</label>
+           <select id="edit-aluno-sexo" required class="w-full bg-zinc-100 border border-zinc-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-amber-500 outline-none">
+           <option value="">Selecione</option>
+           <option value="MASCULINO">Masculino</option>
+           <option value="FEMININO">Feminino</option>
+         </select>
+         </div>
+        </form>
+    </div>
+</div>
+    <!-- Script de Navegação e Integração -->
+    <script>
+      
+
+        function mudarAba(abaId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+            document.getElementById(`conteudo-${abaId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-zinc-800', 'text-amber-400');
+                btn.classList.add('text-zinc-400');
+            });
+            event.currentTarget.classList.add('bg-zinc-800', 'text-amber-400');
+            event.currentTarget.classList.remove('text-zinc-400');
+
+            document.getElementById('titulo-pagina').innerText = abaId.charAt(0).toUpperCase() + abaId.slice(1);
+
+            if(abaId === 'alunos') carregarAlunos();
+            if(abaId === 'responsaveis') carregarResponsaveis();
+            if(abaId === 'escolas') carregarEscolas();
+            if(abaId === 'pagamentos') carregarPagamentos();
+        }
+
+      
+       
+    </script>
+    <script src="./alunos.js"></script>
+    <script src="./responsaveis.js"></script>
+    <script src="./escolas.js"></script>
+    <script src="./pagamentos.js"></script>
+    <script src="./dashboard.js"></script>
+</body>
+</html>
